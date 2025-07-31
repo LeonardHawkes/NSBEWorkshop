@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NSBE GenAI Workshop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: white;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slide {
+            display: none;
+            width: 90%;
+            max-width: 1200px;
+            text-align: center;
+            padding: 2rem;
+            animation: slideIn 0.5s ease-in-out;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientShift 3s ease infinite;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: #4ecdc4;
+        }
+
+        h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: #45b7d1;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            color: #a0a0a0;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .poll-option {
+            background: rgba(255, 107, 107, 0.2);
+            border: 2px solid #ff6b6b;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .poll-option:hover {
+            background: rgba(255, 107, 107, 0.4);
+            transform: scale(1.05);
+        }
+
+        .comparison-table {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .vs-symbol {
+            font-size: 3rem;
+            color: #ff6b6b;
+            align-self: center;
+            text-align: center;
+        }
+
+        .demo-box {
+            background: linear-gradient(45deg, #4ecdc4, #45b7d1);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1rem 0;
+            color: #1a1a2e;
+            font-weight: bold;
+        }
+
+        .framework-step {
+            display: inline-block;
+            background: rgba(78, 205, 196, 0.2);
+            border: 2px solid #4ecdc4;
+            border-radius: 50px;
+            padding: 0.5rem 1rem;
+            margin: 0.5rem;
+            font-weight: bold;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50px;
+            padding: 1rem 2rem;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 1rem;
+            border-radius: 10px;
+        }
+
+        .highlight-box {
+            background: linear-gradient(45deg, rgba(255, 107, 107, 0.2), rgba(78, 205, 196, 0.2));
+            border-left: 5px solid #ff6b6b;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 0 10px 10px 0;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .tool-card {
+            background: rgba(69, 183, 209, 0.2);
+            border: 2px solid #45b7d1;
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .tool-card:hover {
+            background: rgba(69, 183, 209, 0.4);
+            transform: rotate(2deg) scale(1.05);
+        }
+
+        .level-badge {
+            display: inline-block;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            margin: 0.5rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-counter">
+        <span id="slideNumber">1</span> / <span id="totalSlides">15</span>
+    </div>
+
+    <div class="slide-container">
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <h1>AI-Powered Engineering</h1>
+            <p class="subtitle">From Prompt to Professional</p>
+            <div class="highlight-box">
+                <h3>National Society of Black Engineers</h3>
+                <p>GenAI Workshop | 2025</p>
+            </div>
+            <div class="demo-box">
+                <p><strong>Interactive Workshop:</strong> 90 minutes of hands-on AI exploration</p>
+            </div>
+        </div>
+
+        <!-- Slide 2: Icebreaker Poll -->
+        <div class="slide">
+            <h2>Let's Start with You!</h2>
+            <p class="subtitle">How familiar are you with AI tools?</p>
+            <div class="content-grid">
+                <div class="poll-option">🤷‍♀️ Never used AI</div>
+                <div class="poll-option">🧪 Tried ChatGPT once or twice</div>
+                <div class="poll-option">📅 Use AI weekly</div>
+                <div class="poll-option">💼 AI is part of my daily workflow</div>
+                <div class="poll-option">🚀 I'm building AI systems</div>
+            </div>
+            <p style="margin-top: 2rem; color: #4ecdc4;">👆 Click your experience level!</p>
+        </div>
+
+        <!-- Slide 3: The GenAI Revolution -->
+        <div class="slide">
+            <h2>The GenAI Revolution</h2>
+            <p class="subtitle">From Science Fiction to Engineering Reality</p>
+            <div class="content-grid">
+                <div class="card">
+                    <h3>2018: GPT-1</h3>
+                    <p>117M parameters</p>
+                    <p>Basic text completion</p>
+                </div>
+                <div class="card">
+                    <h3>2024: GPT-4</h3>
+                    <p>1.7T+ parameters</p>
+                    <p>Multimodal capabilities</p>
+                </div>
+                <div class="card">
+                    <h3>2025: AI Agents</h3>
+                    <p>Autonomous systems</p>
+                    <p>Real work automation</p>
+                </div>
+            </div>
+            <div class="highlight-box">
+                <strong>Key Point:</strong> We're not just using AI - we're living through the biggest technological shift since the internet.
+            </div>
+        </div>
+
+        <!-- Slide 4: Traditional vs Generative AI -->
+        <div class="slide">
+            <h2>Traditional AI vs Generative AI</h2>
+            <div class="comparison-table">
+                <div class="card">
+                    <h3>Traditional AI</h3>
+                    <ul style="text-align: left;">
+                        <li>Rules-based systems</li>
+                        <li>Narrow, specific tasks</li>
+                        <li>Predictable outputs</li>
+                        <li>Limited creativity</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>Generative AI</h3>
+                    <ul style="text-align: left;">
+                        <li>Learning-based systems</li>
+                        <li>Broad, adaptable capabilities</li>
+                        <li>Creative and varied outputs</li>
+                        <li>Conversational interface</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="demo-box">
+                <strong>Live Demo:</strong> Same engineering problem, two different AI approaches
+            </div>
+        </div>
+
+        <!-- Slide 5: The NSBE Advantage -->
+        <div class="slide">
+            <h2>The NSBE Advantage</h2>
+            <p class="subtitle">Why Engineers Will Lead the AI Revolution</p>
+            <div class="content-grid">
+                <div class="card">
+                    <h3>🧠 Systematic Thinking</h3>
+                    <p>Breaking down complex problems into manageable components</p>
+                </div>
+                <div class="card">
+                    <h3>⚙️ Understanding Constraints</h3>
+                    <p>Recognizing limitations and trade-offs in system design</p>
+                </div>
+                <div class="card">
+                    <h3>🎯 Domain Expertise</h3>
+                    <p>Deep knowledge in critical engineering fields</p>
+                </div>
+                <div class="card">
+                    <h3>🔧 Problem-Solving Skills</h3>
+                    <p>Iterative approach to finding optimal solutions</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Student Applications -->
+        <div class="slide">
+            <h2>AI for Student Success</h2>
+            <div class="tools-grid">
+                <div class="tool-card">
+                    <h3>📚 Research</h3>
+                    <p>Literature reviews, data analysis</p>
+                </div>
+                <div class="tool-card">
+                    <h3>🧮 Learning</h3>
+                    <p>Concept explanations, problem-solving</p>
+                </div>
+                <div class="tool-card">
+                    <h3>💻 Projects</h3>
+                    <p>Code generation, debugging</p>
+                </div>
+                <div class="tool-card">
+                    <h3>📝 Communication</h3>
+                    <p>Technical writing, presentations</p>
+                </div>
+            </div>
+            <div class="demo-box">
+                <strong>Live Demo:</strong> Let's solve a thermodynamics problem together!
+            </div>
+        </div>
+
+        <!-- Slide 7: Career Development -->
+        <div class="slide">
+            <h2>AI-Powered Career Development</h2>
+            <div class="content-grid">
+                <div class="card">
+                    <h3>📄 Resume Optimization</h3>
+                    <p>ATS-friendly formatting and keyword optimization</p>
+                </div>
+                <div class="card">
+                    <h3>💬 Interview Prep</h3>
+                    <p>Mock interviews and behavioral question practice</p>
+                </div>
+                <div class="card">
+                    <h3>🌐 Networking</h3>
+                    <p>LinkedIn content and professional communication</p>
+                </div>
+                <div class="card">
+                    <h3>📈 Skill Development</h3>
+                    <p>Personalized learning paths and progress tracking</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Professional Applications -->
+        <div class="slide">
+            <h2>Professional Engineering with AI</h2>
+            <div class="content-grid">
+                <div class="card">
+                    <h3>🏗️ Civil Engineering</h3>
+                    <p>Building design optimization, traffic flow analysis</p>
+                </div>
+                <div class="card">
+                    <h3>⚙️ Mechanical Engineering</h3>
+                    <p>Thermal analysis, materials selection</p>
+                </div>
+                <div class="card">
+                    <h3>⚡ Electrical Engineering</h3>
+                    <p>Circuit design, signal processing</p>
+                </div>
+                <div class="card">
+                    <h3>💻 Software Engineering</h3>
+                    <p>Code generation, testing, architecture</p>
+                </div>
+                <div class="card">
+                    <h3>🧪 Chemical Engineering</h3>
+                    <p>Process optimization, safety analysis</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: CLEAR Framework -->
+        <div class="slide">
+            <h2>Prompt Engineering: The CLEAR Framework</h2>
+            <div class="content-grid">
+                <div class="framework-step">C - Context</div>
+                <div class="framework-step">L - Length</div>
+                <div class="framework-step">E - Examples</div>
+                <div class="framework-step">A - Audience</div>
+                <div class="framework-step">R - Role</div>
+            </div>
+            <div class="comparison-table">
+                <div class="card" style="background: rgba(255, 107, 107, 0.2);">
+                    <h3>❌ Bad Prompt</h3>
+                    <p>"Help me with my resume"</p>
+                </div>
+                <div class="card" style="background: rgba(78, 205, 196, 0.2);">
+                    <h3>✅ Good Prompt</h3>
+                    <p>"Act as a senior engineering recruiter. Review my mechanical engineering resume for a Tesla internship application..."</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: AI Tool Speed Run -->
+        <div class="slide">
+            <h2>AI Tool Speed Run</h2>
+            <p class="subtitle">5 Essential Tools Every Engineer Should Know</p>
+            <div class="tools-grid">
+                <div class="tool-card">
+                    <h3>ChatGPT</h3>
+                    <p>Technical problem solving</p>
+                </div>
+                <div class="tool-card">
+                    <h3>Claude</h3>
+                    <p>Research and analysis</p>
+                </div>
+                <div class="tool-card">
+                    <h3>GitHub Copilot</h3>
+                    <p>Code generation</p>
+                </div>
+                <div class="tool-card">
+                    <h3>Perplexity</h3>
+                    <p>Engineering research</p>
+                </div>
+                <div class="tool-card">
+                    <h3>Notion AI</h3>
+                    <p>Documentation</p>
+                </div>
+            </div>
+            <div class="demo-box">
+                <strong>Challenge:</strong> 3 minutes per tool to solve engineering mini-challenges!
+            </div>
+        </div>
+
+        <!-- Slide 11: Live Demo -->
+        <div class="slide">
+            <h2>Build an AI Assistant</h2>
+            <p class="subtitle">Creating "NSBE Study Buddy"</p>
+            <div class="content-grid">
+                <div class="card">
+                    <h3>🎯 Purpose</h3>
+                    <p>Personalized engineering tutor for NSBE members</p>
+                </div>
+                <div class="card">
+                    <h3>⚡ Features</h3>
+                    <ul style="text-align: left;">
+                        <li>Subject-specific help</li>
+                        <li>Study optimization</li>
+                        <li>Career guidance</li>
+                        <li>Resource recommendations</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="demo-box">
+                <strong>Live Coding:</strong> Let's build this together!
+            </div>
+        </div>
+
+        <!-- Slide 12: AI Ethics -->
+        <div class="slide">
+            <h2>AI Ethics for Engineers</h2>
+            <div class="content-grid">
+                <div class="card">
+                    <h3>⚖️ Bias & Fairness</h3>
+                    <p>Ensuring AI systems serve all communities equitably</p>
+                </div>
+                <div class="card">
+                    <h3>🔒 Privacy & Security</h3>
+                    <p>Protecting sensitive data in AI applications</p>
+                </div>
+                <div class="card">
+                    <h3>📝 Intellectual Property</h3>
+                    <p>Understanding ownership of AI-generated content</p>
+                </div>
+                <div class="card">
+                    <h3>⚡ Professional Responsibility</h3>
+                    <p>Maintaining accountability in AI-assisted work</p>
+                </div>
+            </div>
+            <div class="highlight-box">
+                <strong>Case Study:</strong> When AI Gets It Wrong - Engineering Disasters to Avoid
+            </div>
+        </div>
+
+        <!-- Slide 13: Emerging Trends -->
+        <div class="slide">
+            <h2>What's Coming Next?</h2>
+            <div class="content-grid">
+                <div class="card">
+                    <h3>🤖 Agentic AI</h3>
+                    <p>Autonomous problem-solving systems that can plan and execute</p>
+                </div>
+                <div class="card">
+                    <h3>👁️ Multimodal AI</h3>
+                    <p>Integration of vision, audio, and text capabilities</p>
+                </div>
+                <div class="card">
+                    <h3>🌐 AI + IoT</h3>
+                    <p>Smart engineering systems with real-time optimization</p>
+                </div>
+                <div class="card">
+                    <h3>⚛️ Quantum-AI</h3>
+                    <p>Next-generation computing for complex simulations</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 14: Career Levels -->
+        <div class="slide">
+            <h2>Your AI Career Journey</h2>
+            <p class="subtitle">From Consumer to Creator</p>
+            <div style="margin: 2rem 0;">
+                <div class="level-badge">Level 1: Use AI tools effectively</div>
+                <div class="level-badge">Level 2: Create custom solutions</div>
+                <div class="level-badge">Level 3: Build AI-powered applications</div>
+                <div class="level-badge">Level 4: Lead AI transformation</div>
+            </div>
+            <div class="highlight-box">
+                <h3>New Career Opportunities:</h3>
+                <p>AI Engineer • Prompt Engineer • AI Ethics Specialist • Machine Learning Engineer</p>
+            </div>
+        </div>
+
+        <!-- Slide 15: Action Steps -->
+        <div class="slide">
+            <h2>Your Next Steps</h2>
+            <div class="content-grid">
+                <div class="card">
+                    <h3>📅 This Week</h3>
+                    <ul style="text-align: left;">
+                        <li>Set up ChatGPT account</li>
+                        <li>Try the CLEAR framework</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>📈 Next 3 Months</h3>
+                    <ul style="text-align: left;">
+                        <li>Complete an AI project</li>
+                        <li>Attend monthly AI workshops</li>
+                        <li>Build AI into daily workflow</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>🚀 Next Year</h3>
+                    <ul style="text-align: left;">
+                        <li>Lead an AI initiative</li>
+                        <li>Mentor other members</li>
+                        <li>Present at NSBE conference</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="demo-box">
+                <strong>Remember:</strong> The future of engineering is not human vs AI - it's human + AI. Let's build that future together! 🚀
+            </div>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" onclick="previousSlide()">← Previous</button>
+        <button class="nav-btn" onclick="nextSlide()">Next →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(index) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[index].classList.add('active');
+            document.getElementById('slideNumber').textContent = index + 1;
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            showSlide(currentSlide);
+        }
+
+        function previousSlide() {
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            showSlide(currentSlide);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                previousSlide();
+            }
+        });
+
+        // Poll interaction
+        document.querySelectorAll('.poll-option').forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove previous selections
+                document.querySelectorAll('.poll-option').forEach(opt => {
+                    opt.style.background = 'rgba(255, 107, 107, 0.2)';
+                });
+                // Highlight selected option
+                this.style.background = 'rgba(255, 107, 107, 0.6)';
+                
+                // Show a fun response
+                setTimeout(() => {
+                    alert('Great! We\'ll tailor the workshop to include all experience levels. Let\'s continue! 🚀');
+                }, 500);
+            });
+        });
+
+        // Tool card interactions
+        document.querySelectorAll('.tool-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const toolName = this.querySelector('h3').textContent;
+                alert(`Great choice! We'll explore ${toolName} in detail during our hands-on session.`);
+            });
+        });
+    </script>
+</body>
+</html>

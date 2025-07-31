@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NSBE AI Workshop - From Prompt to Professional</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .main-title {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientShift 3s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: #a0a0a0;
+            margin-bottom: 1rem;
+        }
+
+        .workshop-info {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .materials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .material-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: white;
+            display: block;
+        }
+
+        .material-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: #4ecdc4;
+        }
+
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #4ecdc4;
+        }
+
+        .card-description {
+            line-height: 1.6;
+            color: #a0a0a0;
+        }
+
+        .quick-start {
+            background: linear-gradient(45deg, rgba(255, 107, 107, 0.2), rgba(78, 205, 196, 0.2));
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            border-left: 5px solid #ff6b6b;
+        }
+
+        .quick-start h3 {
+            color: #ff6b6b;
+            margin-bottom: 1rem;
+        }
+
+        .quick-links {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .quick-link {
+            background: linear-gradient(45deg, #4ecdc4, #45b7d1);
+            color: #1a1a2e;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .quick-link:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .workshop-structure {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .structure-item {
+            display: flex;
+            align-items: center;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .structure-time {
+            background: #4ecdc4;
+            color: #1a1a2e;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-right: 1rem;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .presenter-info {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #a0a0a0;
+        }
+
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 2.5rem;
+            }
+            
+            .materials-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .quick-links {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="main-title">🚀 AI Workshop Hub</h1>
+            <p class="subtitle">From Prompt to Professional: GenAI for Engineers</p>
+            <p class="subtitle">National Society of Black Engineers - NYC Professional Chapter</p>
+        </div>
+
+        <div class="workshop-info">
+            <h3>📅 Workshop Overview</h3>
+            <p><strong>Duration:</strong> 90 minutes interactive session</p>
+            <p><strong>Objective:</strong> Transform engineering professionals from AI consumers to AI creators</p>
+            <p><strong>Level:</strong> Beginner to Advanced (all welcome!)</p>
+        </div>
+
+        <div class="quick-start">
+            <h3>🎯 Quick Start Options</h3>
+            <p>Choose your path based on your role:</p>
+            <div class="quick-links">
+                <a href="Presentation/MainSlides.html" class="quick-link">🎤 Presenter View</a>
+                <a href="Demos/ProfessionalWorkflowOptimizer.html" class="quick-link">⚡ Live Demo</a>
+                <a href="Demos/EngineeringCalculator.html" class="quick-link">🧮 Calculator Demo</a>
+                <a href="Resources/AIToolsChecklist.md" class="quick-link">🛠️ Tools List</a>
+            </div>
+        </div>
+
+        <div class="workshop-structure">
+            <h3>📋 Workshop Flow (90 minutes)</h3>
+            <div class="structure-item">
+                <div class="structure-time">0-20min</div>
+                <div>
+                    <strong>Foundation:</strong> What is GenAI? Why should engineers care?
+                </div>
+            </div>
+            <div class="structure-item">
+                <div class="structure-time">20-45min</div>
+                <div>
+                    <strong>Applications:</strong> Student life, career development, professional engineering
+                </div>
+            </div>
+            <div class="structure-item">
+                <div class="structure-time">45-75min</div>
+                <div>
+                    <strong>Hands-On:</strong> CLEAR framework, tool speed run, live building demo
+                </div>
+            </div>
+            <div class="structure-item">
+                <div class="structure-time">75-90min</div>
+                <div>
+                    <strong>Action Planning:</strong> Ethics, trends, next steps
+                </div>
+            </div>
+        </div>
+
+        <div class="materials-grid">
+            <a href="Presentation/MainSlides.html" class="material-card">
+                <span class="card-icon">🎯</span>
+                <h3 class="card-title">Main Presentation</h3>
+                <p class="card-description">15 interactive slides covering the complete AI journey for engineers. Includes polls, demos, and hands-on activities.</p>
+            </a>
+
+            <a href="Demos/ProfessionalWorkflowOptimizer.html" class="material-card">
+                <span class="card-icon">⚡</span>
+                <h3 class="card-title">Workflow Optimizer Demo</h3>
+                <p class="card-description">Interactive demo showing how AI transforms professional engineering workflows across 6 real-world scenarios.</p>
+            </a>
+
+            <a href="Demos/EngineeringCalculator.html" class="material-card">
+                <span class="card-icon">🧮</span>
+                <h3 class="card-title">AI Engineering Calculator</h3>
+                <p class="card-description">Live demonstration of building an AI-powered engineering calculator using the CLEAR prompt framework.</p>
+            </a>
+
+            <div class="material-card" onclick="alert('Coming soon! Speaker notes with detailed timing and facilitation tips.')">
+                <span class="card-icon">📝</span>
+                <h3 class="card-title">Speaker Notes</h3>
+                <p class="card-description">Detailed facilitation guide with timing, talking points, and adaptation strategies for different audience levels.</p>
+            </div>
+
+            <div class="material-card" onclick="alert('Resource folder contains: AIToolsChecklist.md, ImplementationGuide.md, NSBE-AI-Certification-Path.md')">
+                <span class="card-icon">📚</span>
+                <h3 class="card-title">Resource Library</h3>
+                <p class="card-description">Comprehensive toolkit including AI tools checklist, implementation guide, and certification pathways.</p>
+            </div>
+
+            <div class="material-card" onclick="alert('Workshop materials include: HandsOnExercises.md, PromptTemplates.md, TakeawayResources.md')">
+                <span class="card-icon">🎓</span>
+                <h3 class="card-title">Workshop Materials</h3>
+                <p class="card-description">Participant handouts, exercises, prompt templates, and takeaway resources for continued learning.</p>
+            </div>
+
+            <div class="material-card" onclick="alert('Reference presentations by Leonard Hawkes from JP Morgan Chase on NLP in Fintech and Agentic AI.')">
+                <span class="card-icon">🏦</span>
+                <h3 class="card-title">Industry Examples</h3>
+                <p class="card-description">Real-world case studies from finance industry showing professional AI implementation at scale.</p>
+            </div>
+
+            <div class="material-card" onclick="alert('Custom GPT creation, advanced prompt engineering, and AI ethics deep dive.')">
+                <span class="card-icon">🔬</span>
+                <h3 class="card-title">Advanced Modules</h3>
+                <p class="card-description">Extended content for technical audiences including custom AI assistant creation and advanced applications.</p>
+            </div>
+        </div>
+
+        <div class="presenter-info">
+            <h3>🎤 For Presenters</h3>
+            <p>This workshop is designed to be modular and adaptable. Each demo runs independently, and content can be scaled based on audience experience level and time constraints.</p>
+            <div class="quick-links" style="justify-content: center; margin-top: 1rem;">
+                <a href="#" class="quick-link" onclick="alert('Speaker notes with detailed facilitation guide coming soon!')">📖 Facilitation Guide</a>
+                <a href="#" class="quick-link" onclick="alert('Tech setup checklist and troubleshooting tips coming soon!')">⚙️ Tech Setup</a>
+                <a href="#" class="quick-link" onclick="alert('Backup activities and time management strategies coming soon!')">⏱️ Timing Guide</a>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Built for the NSBE NYC community</p>
+            <p>"The future of engineering is not human vs AI - it's human + AI. Let's build that future together."</p>
+        </div>
+    </div>
+
+    <script>
+        // Add some interactivity
+        document.querySelectorAll('.material-card').forEach(card => {
+            // Only add click animation to cards that have href
+            if (card.hasAttribute('href')) {
+                card.addEventListener('click', function(e) {
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 150);
+                });
+            }
+        });
+
+        // Welcome message
+        console.log('🚀 Welcome to the NSBE AI Workshop Hub!');
+        console.log('💡 Tip: Check out the main presentation first, then explore the demos!');
+    </script>
+</body>
+</html>

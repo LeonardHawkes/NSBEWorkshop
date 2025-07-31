@@ -132,6 +132,19 @@
             margin: 2rem 0;
         }
 
+        .prompt-input {
+            width: 100%;
+            padding: 0.75rem;
+            font-size: 1rem;
+            border-radius: 8px;
+            border: 1px solid #4ecdc4;
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        .prompt-input::placeholder {
+            color: #a0a0a0;
+        }
+
         .demo-button {
             background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
             border: none;
@@ -302,6 +315,47 @@
                         👆 Select a scenario to see the details
                     </p>
                 </div>
+                                <!-- 👇 Custom Prompt Generator -->
+                <div style="margin-top: 2rem;">
+                    <h3 style="margin-bottom: 1rem;">🛠️ Build Your Own Prompt <span title="Follow the CLEAR Framework: Context, Length, Examples, Audience, Role" style="cursor: help;">ℹ️</span></h3>
+                    
+                    <label style="display:block; margin-bottom:0.5rem;">
+                        C - Context 
+                        <span title="Describe the engineering situation or challenge you're working on" style="cursor: help;">🛈</span>
+                    </label>
+                    <input type="text" id="customContext" class="prompt-input" placeholder="Designing a smart HVAC system for a 30-story commercial building in NYC"><br><br>
+
+                    <label style="display:block; margin-bottom:0.5rem;">
+                        L - Length / Format 
+                        <span title="How long or what format the output should take (e.g., 1-page report)" style="cursor: help;">🛈</span>
+                    </label>
+                    <input type="text" id="customLength" class="prompt-input" placeholder="Executive summary (200 words) with bullet points"><br><br>
+
+                    <label style="display:block; margin-bottom:0.5rem;">
+                        E - Examples 
+                        <span title="Give examples of how similar outputs should look, if available" style="cursor: help;">🛈</span>
+                    </label>
+                    <input type="text" id="customExamples" class="prompt-input" placeholder="Similar to our previous LEED-compliant project proposal"><br><br>
+
+                    <label style="display:block; margin-bottom:0.5rem;">
+                        A - Audience 
+                        <span title="Who will be reading or using the result? (e.g., executive, regulator, student)" style="cursor: help;">🛈</span>
+                    </label>
+                    <input type="text" id="customAudience" class="prompt-input" placeholder="Senior city officials with non-technical backgrounds"><br><br>
+
+                    <label style="display:block; margin-bottom:0.5rem;">
+                        R - Role 
+                        <span title="Tell the AI what role to play (e.g., senior engineer, technical writer)" style="cursor: help;">🛈</span>
+                    </label>
+                    <input type="text" id="customRole" class="prompt-input" placeholder="Act as a senior mechanical engineer with 10 years experience"><br><br>
+
+                    <div id="customPromptResult" style="margin-top: 1rem; display: none;">
+                        <h4>Your Custom Prompt:</h4>
+                        <div class="prompt-preview" id="customPromptText"></div>
+                        <button class="demo-button" onclick="copyPrompt()">📋 Copy to Clipboard</button>
+                    </div>
+                </div>
+
                 <button class="demo-button" id="analyzeBtn" onclick="analyzeWithAI()" style="display: none;">
                     🤖 Analyze with AI
                 </button>
@@ -788,6 +842,43 @@ Focus on practical, immediately implementable solutions that complement engineer
         document.addEventListener('DOMContentLoaded', function() {
             // Any initialization code can go here
         });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            ['customContext', 'customLength', 'customExamples', 'customAudience', 'customRole'].forEach(id => {
+                document.getElementById(id).addEventListener('input', updateLivePrompt);
+            });
+        });
+
+
+        function updateLivePrompt() {
+            const context = document.getElementById('customContext').value.trim();
+            const length = document.getElementById('customLength').value.trim();
+            const examples = document.getElementById('customExamples').value.trim();
+            const audience = document.getElementById('customAudience').value.trim();
+            const role = document.getElementById('customRole').value.trim();
+
+            const prompt = `
+                Act as ${role || 'a professional engineer'}.
+                ${context ? 'Context: ' + context + '\n' : ''}
+                ${length ? 'Length/Format: ' + length + '\n' : ''}
+                ${examples ? 'Examples: ' + examples + '\n' : ''}
+                ${audience ? 'Audience: ' + audience + '\n' : ''}
+                Provide a response optimized for this scenario.
+            `.trim();
+
+            const previewDiv = document.getElementById('customPromptText');
+            previewDiv.textContent = prompt;
+            document.getElementById('customPromptResult').style.display = prompt ? 'block' : 'none';
+        }
+
+
+        function copyPrompt() {
+            const promptText = document.getElementById('customPromptText').textContent;
+            navigator.clipboard.writeText(promptText)
+                .then(() => alert('✅ Prompt copied to clipboard!'))
+                .catch(err => alert('❌ Copy failed: ' + err));
+        }
+
     </script>
 </body>
 </html>

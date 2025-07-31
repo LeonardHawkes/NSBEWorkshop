@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NSBE Professional AI Demo: Workflow Optimizer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: white;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientShift 3s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #a0a0a0;
+            margin-bottom: 3rem;
+        }
+
+        .workflow-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            height: fit-content;
+        }
+
+        .scenario-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .scenario-card {
+            background: rgba(78, 205, 196, 0.2);
+            border: 2px solid #4ecdc4;
+            border-radius: 10px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .scenario-card:hover {
+            background: rgba(78, 205, 196, 0.4);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .scenario-card.selected {
+            background: rgba(78, 205, 196, 0.6);
+            border-color: #ff6b6b;
+        }
+
+        .ai-output {
+            background: rgba(69, 183, 209, 0.2);
+            border: 2px solid #45b7d1;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            font-family: 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .before-after {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .before, .after {
+            padding: 1.5rem;
+            border-radius: 10px;
+        }
+
+        .before {
+            background: rgba(255, 107, 107, 0.2);
+            border: 2px solid #ff6b6b;
+        }
+
+        .after {
+            background: rgba(78, 205, 196, 0.2);
+            border: 2px solid #4ecdc4;
+        }
+
+        .tool-demo {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .prompt-input {
+            width: 100%;
+            padding: 0.75rem;
+            font-size: 1rem;
+            border-radius: 8px;
+            border: 1px solid #4ecdc4;
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        .prompt-input::placeholder {
+            color: #a0a0a0;
+        }
+
+        .demo-button {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            border: none;
+            border-radius: 10px;
+            padding: 1rem 2rem;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .demo-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .step {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #45b7d1;
+            border-radius: 50px;
+            padding: 0.75rem 1.5rem;
+            margin: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .step.active {
+            background: #4ecdc4;
+            color: #1a1a2e;
+        }
+
+        .step.completed {
+            background: #ff6b6b;
+            border-color: #ff6b6b;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .metric-card {
+            background: linear-gradient(45deg, rgba(69, 183, 209, 0.3), rgba(78, 205, 196, 0.3));
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #4ecdc4;
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            color: #a0a0a0;
+            margin-top: 0.5rem;
+        }
+
+        .loading-animation {
+            display: none;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .loading-dots {
+            display: inline-block;
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        .prompt-preview {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            border-left: 4px solid #4ecdc4;
+        }
+
+        @media (max-width: 768px) {
+            .workflow-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .before-after {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 AI Workflow Optimizer</h1>
+        <p class="subtitle">Supercharge Your Engineering Productivity - NSBE NYC Professional Demo</p>
+        
+
+        <div class="step-indicator">
+            <div class="step active" onclick="showStep(1)">1. Select Scenario</div>
+            <div class="step" onclick="showStep(2)">2. AI Analysis</div>
+            <div class="step" onclick="showStep(3)">3. Implementation</div>
+            <div class="step" onclick="showStep(4)">4. Results</div>
+            <a href="Presentation/NSBE From Prompt to Professional.pdf" target="_blank" class="demo-button">View Full PDF Presentation</a>
+        </div>
+
+        <!-- Step 1: Scenario Selection -->
+        <div id="step1" class="workflow-container">
+            <div class="panel">
+                <h2>🎯 Real Engineering Scenarios</h2>
+                <p>Choose a scenario that matches your daily work:</p>
+                
+                <div class="scenario-selector">
+                    <div class="scenario-card" onclick="selectScenario('projectReport')">
+                        <h3>📊 Project Status Report</h3>
+                        <p>Weekly executive summary for complex infrastructure project</p>
+                    </div>
+                    
+                    <div class="scenario-card" onclick="selectScenario('clientPresentation')">
+                        <h3>🎨 Client Presentation</h3>
+                        <p>Technical proposal for new client engagement</p>
+                    </div>
+                    
+                    <div class="scenario-card" onclick="selectScenario('riskAssessment')">
+                        <h3>⚠️ Risk Assessment</h3>
+                        <p>Safety analysis for manufacturing process change</p>
+                    </div>
+                    
+                    <div class="scenario-card" onclick="selectScenario('techSpec')">
+                        <h3>📋 Technical Specification</h3>
+                        <p>Detailed engineering requirements document</p>
+                    </div>
+
+                    <div class="scenario-card" onclick="selectScenario('compliance')">
+                        <h3>✅ Compliance Review</h3>
+                        <p>NYC building code compliance documentation</p>
+                    </div>
+                    
+                    <div class="scenario-card" onclick="selectScenario('optimization')">
+                        <h3>⚡ Process Optimization</h3>
+                        <p>Workflow efficiency improvement analysis</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2>📝 Selected Scenario</h2>
+                <div id="scenarioDetails">
+                    <p style="color: #a0a0a0; text-align: center; margin: 3rem 0;">
+                        👆 Select a scenario to see the details
+                    </p>
+                </div>
+                                <!-- 👇 Custom Prompt Generator -->
+                <div style="margin-top: 2rem;">
+                    <h3 style="margin-bottom: 1rem;">🛠️ Build Your Own Prompt <span title="Follow the CLEAR Framework: Context, Length, Examples, Audience, Role" style="cursor: help;">ℹ️</span></h3>
+                    
+                    <label style="display:block; margin-bottom:0.5rem;">
+                        C - Context 
+                        <span title="Describe the engineering situation or challenge you're working on" style="cursor: help;">🛈</span>
+                    </label>
+                    <input type="text" id="customContext" class="prompt-input" placeholder="Designing a smart HVAC system for a 30-story commercial building in NYC"><br><br>
+
+                    <label style="display:block; margin-bottom:0.5rem;">
+                        L - Length / Format 
+                        <span title="How long or what format the output should take (e.g., 1-page report)" style="cursor: help;">🛈</span>
+                    </label>
+                    <input type="text" id="customLength" class="prompt-input" placeholder="Executive summary (200 words) with bullet points"><br><br>
+
+                    <label style="display:block; margin-bottom:0.5rem;">
+                        E - Examples 
+                        <span title="Give examples of how similar outputs should look, if available" style="cursor: help;">🛈</span>
+                    </label>
+                    <input type="text" id="customExamples" class="prompt-input" placeholder="Similar to our previous LEED-compliant project proposal"><br><br>
+
+                    <label style="display:block; margin-bottom:0.5rem;">
+                        A - Audience 
+                        <span title="Who will be reading or using the result? (e.g., executive, regulator, student)" style="cursor: help;">🛈</span>
+                    </label>
+                    <input type="text" id="customAudience" class="prompt-input" placeholder="Senior city officials with non-technical backgrounds"><br><br>
+
+                    <label style="display:block; margin-bottom:0.5rem;">
+                        R - Role 
+                        <span title="Tell the AI what role to play (e.g., senior engineer, technical writer)" style="cursor: help;">🛈</span>
+                    </label>
+                    <input type="text" id="customRole" class="prompt-input" placeholder="Act as a senior mechanical engineer with 10 years experience"><br><br>
+
+                    <div id="customPromptResult" style="margin-top: 1rem; display: none;">
+                        <h4>Your Custom Prompt:</h4>
+                        <div class="prompt-preview" id="customPromptText"></div>
+                        <button class="demo-button" onclick="copyPrompt()">📋 Copy to Clipboard</button>
+                    </div>
+                </div>
+
+                <button class="demo-button" id="analyzeBtn" onclick="analyzeWithAI()" style="display: none;">
+                    🤖 Analyze with AI
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 2: AI Analysis -->
+        <div id="step2" class="workflow-container" style="display: none;">
+            <div class="panel">
+                <h2>🧠 AI Analysis in Progress</h2>
+                <div class="loading-animation" id="aiAnalysis">
+                    <p>🔄 Processing your engineering scenario...</p>
+                    <p>📊 Analyzing current workflow...</p>
+                    <p>💡 Identifying optimization opportunities...</p>
+                    <p>⚡ Generating AI-powered solutions...</p>
+                </div>
+                
+                <div id="promptPreview" style="display: none;">
+                    <h3>Prompt Used:</h3>
+                    <div class="prompt-preview" id="promptText"></div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2>📈 Before vs After</h2>
+                <div class="before-after">
+                    <div class="before">
+                        <h3>❌ Traditional Approach</h3>
+                        <div id="beforeContent">
+                            <p>Manual process details will appear here...</p>
+                        </div>
+                    </div>
+                    <div class="after">
+                        <h3>✅ AI-Optimized Approach</h3>
+                        <div id="afterContent">
+                            <p>AI improvements will appear here...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: Implementation -->
+        <div id="step3" style="display: none;">
+            <div class="tool-demo">
+                <h2>🛠️ Implementation: Tools & Workflow</h2>
+                
+                <div class="workflow-container">
+                    <div class="panel">
+                        <h3>🎯 AI Tools Used</h3>
+                        <div id="toolsList">
+                            <!-- Tools will be populated based on scenario -->
+                        </div>
+                        
+                        <h3 style="margin-top: 2rem;">📋 Step-by-Step Process</h3>
+                        <div id="processSteps">
+                            <!-- Process steps will be populated -->
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <h3>📄 Live Demo Output</h3>
+                        <div class="ai-output" id="demoOutput">
+                            <p>Click "Generate Sample Output" to see AI in action!</p>
+                        </div>
+                        <button class="demo-button" onclick="generateOutput()">
+                            ✨ Generate Sample Output
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 4: Results & Metrics -->
+        <div id="step4" style="display: none;">
+            <div class="panel">
+                <h2>📊 Impact Metrics</h2>
+                <div class="metrics-grid" id="metricsGrid">
+                    <!-- Metrics will be populated based on scenario -->
+                </div>
+                
+                <h3 style="margin-top: 2rem;">🎯 Next Steps for Your Team</h3>
+                <div id="nextSteps">
+                    <!-- Next steps will be populated -->
+                </div>
+                
+                <div style="text-align: center; margin-top: 2rem;">
+                    <button class="demo-button" onclick="exportWorkflow()">
+                        📁 Export Workflow Template
+                    </button>
+                    <button class="demo-button" onclick="scheduleFollowUp()">
+                        📅 Schedule Team Training
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Completion Message -->
+        <div id="completion" style="display: none; text-align: center; margin: 3rem 0;">
+            <h2>🎉 Workshop Complete!</h2>
+            <p style="font-size: 1.2rem; margin: 1rem 0;">You've seen how AI can transform your engineering workflows</p>
+            <div class="panel" style="max-width: 600px; margin: 2rem auto;">
+                <h3>🚀 Key Takeaways</h3>
+                <ul style="text-align: left; line-height: 2;">
+                    <li>✅ AI augments your engineering expertise, doesn't replace it</li>
+                    <li>✅ Focus on tasks that consume time but not creative energy</li>
+                    <li>✅ Start small with document automation and analysis</li>
+                    <li>✅ Build AI literacy across your entire team</li>
+                    <li>✅ Always validate AI outputs with your domain knowledge</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        let selectedScenario = null;
+
+        const scenarios = {
+            projectReport: {
+                title: "📊 Weekly Project Status Report",
+                description: "You need to create an executive summary for a $50M infrastructure project with 15 workstreams, multiple stakeholders, and complex interdependencies.",
+                painPoints: [
+                    "⏰ Takes 4-6 hours to compile from multiple sources",
+                    "📧 Requires chasing down updates from 8 different teams",
+                    "📊 Manual data aggregation from various project tools",
+                    "🎯 Difficulty highlighting critical issues for executives"
+                ],
+                aiSolution: [
+                    "⚡ Automated data collection from project management tools",
+                    "🤖 AI-generated executive summaries with key insights",
+                    "🎯 Automatic risk flagging and priority ranking",
+                    "📈 Dynamic visualization creation"
+                ],
+                tools: ["Claude", "ChatGPT", "Notion AI", "Zapier"],
+                timeImprovement: "80%",
+                qualityImprovement: "95%"
+            },
+            clientPresentation: {
+                title: "🎨 Technical Proposal Presentation",
+                description: "Create a compelling 20-slide presentation for a potential $2M engineering consulting contract with a Fortune 500 client.",
+                painPoints: [
+                    "🎨 Struggling with visual design and layout",
+                    "📝 Difficulty translating technical details for business audience",
+                    "⏰ Taking weeks to create compelling content",
+                    "🎯 Ensuring consistent messaging across technical and business sections"
+                ],
+                aiSolution: [
+                    "🤖 AI-generated presentation structure and content",
+                    "🎨 Automated slide design and visual elements",
+                    "📊 Technical-to-business language translation",
+                    "✨ Consistent branding and messaging"
+                ],
+                tools: ["Gamma", "ChatGPT", "Canva AI", "Perplexity"],
+                timeImprovement: "70%",
+                qualityImprovement: "85%"
+            },
+            riskAssessment: {
+                title: "⚠️ Manufacturing Process Risk Assessment",
+                description: "Conduct comprehensive safety analysis for implementing new automation in a chemical processing plant.",
+                painPoints: [
+                    "📚 Manual review of hundreds of safety standards",
+                    "🔍 Time-intensive hazard identification process",
+                    "📋 Complex regulatory compliance documentation",
+                    "👥 Coordinating input from multiple safety specialists"
+                ],
+                aiSolution: [
+                    "🤖 Automated standards research and compliance checking",
+                    "🔍 AI-powered hazard pattern recognition",
+                    "📋 Auto-generated compliance documentation",
+                    "🎯 Risk prioritization and mitigation recommendations"
+                ],
+                tools: ["Claude", "Perplexity", "ChatGPT", "Notion AI"],
+                timeImprovement: "85%",
+                qualityImprovement: "90%"
+            },
+            techSpec: {
+                title: "📋 Technical Requirements Document",
+                description: "Write detailed engineering specifications for a new smart building HVAC control system integration.",
+                painPoints: [
+                    "📝 Ensuring complete coverage of all technical requirements",
+                    "🔗 Managing complex system interdependencies",
+                    "📏 Maintaining consistent formatting and terminology",
+                    "👥 Incorporating feedback from multiple engineering disciplines"
+                ],
+                aiSolution: [
+                    "🤖 AI-generated requirement templates and checklists",
+                    "🔗 Automated dependency mapping and validation",
+                    "📏 Consistent terminology and formatting",
+                    "👥 Intelligent feedback integration and conflict resolution"
+                ],
+                tools: ["Claude", "ChatGPT", "Notion AI", "Grammarly"],
+                timeImprovement: "75%",
+                qualityImprovement: "88%"
+            },
+            compliance: {
+                title: "✅ NYC Building Code Compliance Review",
+                description: "Ensure a 40-story mixed-use development meets all NYC building codes and regulations.",
+                painPoints: [
+                    "📚 Navigating complex and frequently updated regulations",
+                    "🔍 Manual cross-referencing of multiple code sections",
+                    "📋 Tedious documentation and evidence compilation",
+                    "⏰ Lengthy review cycles with city departments"
+                ],
+                aiSolution: [
+                    "🤖 AI-powered regulation research and interpretation",
+                    "🔍 Automated compliance gap analysis",
+                    "📋 Smart documentation generation",
+                    "⚡ Predictive compliance issue identification"
+                ],
+                tools: ["Perplexity", "Claude", "ChatGPT", "LexisNexis AI"],
+                timeImprovement: "90%",
+                qualityImprovement: "92%"
+            },
+            optimization: {
+                title: "⚡ Engineering Workflow Optimization",
+                description: "Analyze and improve the design review process for a civil engineering firm with 50+ engineers.",
+                painPoints: [
+                    "📊 No clear visibility into process bottlenecks",
+                    "👥 Inconsistent review quality across different teams",
+                    "⏰ Long cycle times affecting project delivery",
+                    "📋 Manual tracking and reporting of process metrics"
+                ],
+                aiSolution: [
+                    "📊 AI-powered workflow analysis and bottleneck identification",
+                    "👥 Standardized review criteria and quality scoring",
+                    "⚡ Automated task routing and prioritization",
+                    "📈 Real-time process monitoring and optimization"
+                ],
+                tools: ["ChatGPT", "Claude", "Process Street AI", "Zapier"],
+                timeImprovement: "65%",
+                qualityImprovement: "80%"
+            }
+        };
+
+        function selectScenario(scenarioKey) {
+            selectedScenario = scenarioKey;
+            const scenario = scenarios[scenarioKey];
+            
+            // Remove previous selections
+            document.querySelectorAll('.scenario-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Highlight selected card
+            event.target.closest('.scenario-card').classList.add('selected');
+            
+            // Update scenario details
+            const detailsHtml = `
+                <h3>${scenario.title}</h3>
+                <p style="margin: 1rem 0; line-height: 1.6;">${scenario.description}</p>
+                
+                <h4 style="color: #ff6b6b; margin-top: 1.5rem;">Current Pain Points:</h4>
+                <ul style="text-align: left; margin: 0.5rem 0;">
+                    ${scenario.painPoints.map(point => `<li style="margin: 0.5rem 0;">${point}</li>`).join('')}
+                </ul>
+            `;
+            
+            document.getElementById('scenarioDetails').innerHTML = detailsHtml;
+            document.getElementById('analyzeBtn').style.display = 'block';
+        }
+
+        function analyzeWithAI() {
+            if (!selectedScenario) {
+                alert('Please select a scenario first!');
+                return;
+            }
+            
+            showStep(2);
+            
+            const scenario = scenarios[selectedScenario];
+            
+            // Show loading animation
+            const loadingDiv = document.getElementById('aiAnalysis');
+            loadingDiv.style.display = 'block';
+            const loadingSteps = loadingDiv.children;
+            
+            // Simulate AI analysis
+            for (let i = 0; i < loadingSteps.length; i++) {
+                setTimeout(() => {
+                    loadingSteps[i].style.color = '#4ecdc4';
+                    loadingSteps[i].innerHTML = '✅ ' + loadingSteps[i].innerHTML.substring(2);
+                    
+                    if (i === loadingSteps.length - 1) {
+                        setTimeout(() => {
+                            showAnalysisResults();
+                        }, 500);
+                    }
+                }, (i + 1) * 1000);
+            }
+        }
+
+        function showAnalysisResults() {
+            const scenario = scenarios[selectedScenario];
+            
+            // Show prompt used
+            const promptText = `Act as a senior engineering consultant specializing in workflow optimization. Analyze the following engineering scenario and provide specific recommendations for AI-powered improvements:
+                Scenario: ${scenario.description}
+
+                Current challenges: ${scenario.painPoints.join(', ')}
+
+                Please provide:
+                1. Specific AI tools and techniques to address each challenge
+                2. Step-by-step implementation workflow
+                3. Expected time and quality improvements
+                4. Risk mitigation strategies
+
+                Focus on practical, immediately implementable solutions that complement engineering expertise rather than replacing it.`;
+            
+            document.getElementById('promptText').textContent = promptText;
+            document.getElementById('promptPreview').style.display = 'block';
+            
+            // Show before/after comparison
+            document.getElementById('beforeContent').innerHTML = scenario.painPoints.map(point => `<p>• ${point}</p>`).join('');
+            document.getElementById('afterContent').innerHTML = scenario.aiSolution.map(point => `<p>• ${point}</p>`).join('');
+            
+            document.getElementById('aiAnalysis').style.display = 'none';
+        }
+
+        function showStep(step) {
+            // Hide all steps
+            for (let i = 1; i <= 4; i++) {
+                const stepDiv = document.getElementById(`step${i}`);
+                if (stepDiv) stepDiv.style.display = 'none';
+                
+                document.querySelectorAll('.step')[i-1].classList.remove('active');
+                if (i < step) {
+                    document.querySelectorAll('.step')[i-1].classList.add('completed');
+                }
+            }
+            
+            // Show current step
+            const currentStepDiv = document.getElementById(`step${step}`);
+            if (currentStepDiv) currentStepDiv.style.display = 'block';
+            document.querySelectorAll('.step')[step-1].classList.add('active');
+            currentStep = step;
+            
+            if (step === 3) {
+                populateImplementationStep();
+            } else if (step === 4) {
+                populateResultsStep();
+            }
+        }
+
+        function populateImplementationStep() {
+            if (!selectedScenario) return;
+            
+            const scenario = scenarios[selectedScenario];
+            
+            // Populate tools list
+            const toolsHtml = scenario.tools.map(tool => `
+                <div style="background: rgba(78, 205, 196, 0.2); padding: 1rem; margin: 0.5rem 0; border-radius: 8px; border-left: 4px solid #4ecdc4;">
+                    <strong>${tool}</strong>
+                </div>
+            `).join('');
+            
+            document.getElementById('toolsList').innerHTML = toolsHtml;
+            
+            // Populate process steps
+            const processHtml = `
+                <div style="background: rgba(69, 183, 209, 0.2); padding: 1rem; margin: 0.5rem 0; border-radius: 8px;">
+                    <strong>Step 1:</strong> Data Collection & Analysis
+                </div>
+                <div style="background: rgba(69, 183, 209, 0.2); padding: 1rem; margin: 0.5rem 0; border-radius: 8px;">
+                    <strong>Step 2:</strong> AI Processing & Optimization
+                </div>
+                <div style="background: rgba(69, 183, 209, 0.2); padding: 1rem; margin: 0.5rem 0; border-radius: 8px;">
+                    <strong>Step 3:</strong> Output Generation & Review
+                </div>
+                <div style="background: rgba(69, 183, 209, 0.2); padding: 1rem; margin: 0.5rem 0; border-radius: 8px;">
+                    <strong>Step 4:</strong> Implementation & Feedback
+                </div>
+            `;
+            
+            document.getElementById('processSteps').innerHTML = processHtml;
+        }
+
+        function generateOutput() {
+            if (!selectedScenario) return;
+            
+            const scenario = scenarios[selectedScenario];
+            
+            // Simulate generating output based on scenario
+            const sampleOutputs = {
+                projectReport: `
+                    <h4>🎯 Executive Summary - Infrastructure Project Alpha</h4>
+                    <p><strong>Status:</strong> On track, 73% complete</p>
+                    <p><strong>Budget:</strong> $47.2M spent of $50M (5.6% under budget)</p>
+                    <p><strong>Timeline:</strong> 2 weeks ahead of schedule</p>
+                    
+                    <h5>🚨 Critical Issues Requiring Attention:</h5>
+                    <ul>
+                        <li>Permit delay for Phase 3 foundations - mitigation plan in progress</li>
+                        <li>Steel delivery postponed by 1 week - alternative suppliers identified</li>
+                    </ul>
+                    
+                    <h5>📈 Key Achievements This Week:</h5>
+                    <ul>
+                        <li>Completed electrical rough-in for Building A</li>
+                        <li>Passed safety inspection with zero violations</li>
+                        <li>Negotiated 3% cost reduction on HVAC systems</li>
+                    </ul>
+                `,
+                clientPresentation: `
+                    <h4>🚀 Engineering Excellence Partnership Proposal</h4>
+                    <p><strong>Project:</strong> Smart Building Infrastructure Optimization</p>
+                    <p><strong>Value Proposition:</strong> 25% energy reduction, $500K annual savings</p>
+                    
+                    <h5>🎯 Our Approach:</h5>
+                    <ul>
+                        <li>Phase 1: Comprehensive building systems audit (Week 1-2)</li>
+                        <li>Phase 2: AI-powered optimization modeling (Week 3-4)</li>
+                        <li>Phase 3: Implementation & monitoring (Week 5-12)</li>
+                    </ul>
+                    
+                    <h5>💡 Expected Outcomes:</h5>
+                    <ul>
+                        <li>Energy consumption reduced by 25%</li>
+                        <li>Maintenance costs cut by 40%</li>
+                        <li>ROI achieved within 18 months</li>
+                    </ul>
+                `
+            };
+            
+            document.getElementById('demoOutput').innerHTML = sampleOutputs[selectedScenario] || `
+                <h4>✨ AI-Generated Output</h4>
+                <p>Sample professional-quality output generated in under 30 seconds!</p>
+                <p>This would normally take hours of manual work to compile and format.</p>
+            `;
+        }
+
+        function populateResultsStep() {
+            if (!selectedScenario) return;
+            
+            const scenario = scenarios[selectedScenario];
+            
+            // Populate metrics
+            const metricsHtml = `
+                <div class="metric-card">
+                    <div class="metric-value">${scenario.timeImprovement}</div>
+                    <div class="metric-label">Time Saved</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">${scenario.qualityImprovement}</div>
+                    <div class="metric-label">Quality Score</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">$25K</div>
+                    <div class="metric-label">Annual Value</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">2 hrs</div>
+                    <div class="metric-label">Weekly Time Savings</div>
+                </div>
+            `;
+            
+            document.getElementById('metricsGrid').innerHTML = metricsHtml;
+            
+            // Populate next steps
+            const nextStepsHtml = `
+                <ul style="text-align: left; line-height: 2; margin: 1rem 0;">
+                    <li>🎯 <strong>Week 1:</strong> Set up AI tool accounts for your team</li>
+                    <li>📚 <strong>Week 2:</strong> Pilot the workflow with one project</li>
+                    <li>🔄 <strong>Week 3:</strong> Gather feedback and refine process</li>
+                    <li>📈 <strong>Week 4:</strong> Scale to additional projects and team members</li>
+                    <li>🎉 <strong>Month 2:</strong> Measure and document improvements</li>
+                </ul>
+            `;
+            
+            document.getElementById('nextSteps').innerHTML = nextStepsHtml;
+        }
+
+        function exportWorkflow() {
+            alert('🎉 Workflow template exported! In a real implementation, this would download a detailed implementation guide with tool setup instructions, prompt templates, and best practices.');
+        }
+
+        function scheduleFollowUp() {
+            document.getElementById('completion').style.display = 'block';
+            alert('📅 Follow-up training scheduled! Your team will receive detailed implementation support and ongoing AI literacy development.');
+        }
+
+        // Initialize the demo
+        document.addEventListener('DOMContentLoaded', function() {
+            // Any initialization code can go here
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            ['customContext', 'customLength', 'customExamples', 'customAudience', 'customRole'].forEach(id => {
+                document.getElementById(id).addEventListener('input', updateLivePrompt);
+            });
+        });
+
+
+        function updateLivePrompt() {
+            const context = document.getElementById('customContext').value.trim();
+            const length = document.getElementById('customLength').value.trim();
+            const examples = document.getElementById('customExamples').value.trim();
+            const audience = document.getElementById('customAudience').value.trim();
+            const role = document.getElementById('customRole').value.trim();
+
+            const prompt = `
+                Act as ${role || 'a professional engineer'}.
+                ${context ? 'Context: ' + context + '\n' : ''}
+                ${length ? 'Length/Format: ' + length + '\n' : ''}
+                ${examples ? 'Examples: ' + examples + '\n' : ''}
+                ${audience ? 'Audience: ' + audience + '\n' : ''}
+                Provide a response optimized for this scenario.
+            `.trim();
+
+            const previewDiv = document.getElementById('customPromptText');
+            previewDiv.textContent = prompt;
+            document.getElementById('customPromptResult').style.display = prompt ? 'block' : 'none';
+        }
+
+
+        function copyPrompt() {
+            const promptText = document.getElementById('customPromptText').textContent;
+            navigator.clipboard.writeText(promptText)
+                .then(() => alert('✅ Prompt copied to clipboard!'))
+                .catch(err => alert('❌ Copy failed: ' + err));
+        }
+
+    </script>
+</body>
+</html>
